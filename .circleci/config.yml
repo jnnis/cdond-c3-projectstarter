@@ -248,7 +248,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - ssh-key:
+      - add_ssh_keys:
           fingerprints:
             - "50:15:98:08:9d:cd:b0:d9:95:21:e8:4e:8d:b6:49:6a"
       - attach-workspace:
@@ -291,7 +291,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - ssh-key:
+      - add_ssh_keys:
           fingerprints:
             - "50:15:98:08:9d:cd:b0:d9:95:21:e8:4e:8d:b6:49:6a"
       - attach-workspace:
@@ -328,7 +328,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - ssh-key:
+      - add_ssh_keys:
           fingerprints:
             - "50:15:98:08:9d:cd:b0:d9:95:21:e8:4e:8d:b6:49:6a"
       - attach-workspace:
