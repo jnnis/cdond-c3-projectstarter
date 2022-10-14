@@ -21,5 +21,5 @@
 - name: "Move ENV Files"
   become: true
   copy:
-  src: myenv.sh
-  dst: /etc/profile.d/
+    src: myenv.sh
+    dst: /etc/profile.d/
