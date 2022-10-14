@@ -61,8 +61,7 @@ commands:
               cd ~/project/backend
               npm install
               npm run migrations:revert
-            fi
-            
+            fi            
 jobs:
   build-frontend:
     docker:
@@ -321,22 +320,7 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-env
       - revert-migrations
-  deploy-backend:
-    docker:
-      # Docker image here that supports Ansible
-    steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-      - run:
-          name: Deploy backend
-          command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure  
+
   deploy-backend:
     docker:
       - image: cimg/base:stable
