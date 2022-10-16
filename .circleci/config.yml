@@ -356,6 +356,10 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
             npm audit fix
+            npm audit fix --force
+            npm audit fix --force
+            npm audit fix --audit-level=critical --force
+            npm audit fix --audit-level=high --force
 
       - destroy-env
       - revert-migrations
