@@ -342,10 +342,6 @@ jobs:
             cd backend
             npm i
             npm run build
-          # npm audit fix --force
-          # npm audit fix --force
-          # npm audit fix --audit-level=critical --force
-          # npm audit fix --audit-level=high --force
             cd ..
             cd .circleci/ansible
             mkdir files
@@ -355,11 +351,6 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-          # npm audit fix
-          # npm audit fix --force
-          # npm audit fix --force
-          # npm audit fix --audit-level=critical --force
-          # npm audit fix --audit-level=high --force
 
       - destroy-env
       - revert-migrations
