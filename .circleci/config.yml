@@ -255,6 +255,7 @@ jobs:
           at: ~/
       
       - ansible-install
+      - awscli-install
 
       - run:
           name: Configure server
@@ -374,14 +375,14 @@ jobs:
       - nodejs-install
       - awscli-install
       - run:
-          name: Get backend url
+          name: Backend smoke test
           command: |
-              export BACKEND_IP=$(aws ec2 describe-instances \
+              export BE_PUB_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \ 
-              --filters "Name=tag:Name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
-              echo ${BACKEND_IP}
-              export API_URL="http://${BACKEND_IP}:3030"
+              echo ${BE_PUB_IP}
+              export API_URL="http://${BE_PUB_IP}:3030"
               echo "${API_URL}"
               if curl "${API_URL}/api/status" | grep "ok"
               then
@@ -404,20 +405,20 @@ jobs:
       - destroy-env
       - revert-migrations
 
-#   cloudfront-update:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Update cloudfront distribution
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  # cloudfront-update:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           # your code here
+  #     - run:
+  #         name: Update cloudfront distribution
+  #         command: |
+  #           # your code here
+      # Here's where you will add some code to rollback on failure  
 
 # cleanup:
 #     docker:
