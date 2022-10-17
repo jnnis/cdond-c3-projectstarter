@@ -306,10 +306,9 @@ jobs:
           name: backend URL
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
-            --query 'Reservations[*].Instances[*].PublicIpAddress' \ 
-            --filter Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} \
-            --output text
-            )
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \ 
+              --filter Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -318,10 +317,9 @@ jobs:
           name: backend URL
           command: | 
             cd frontend
-            sudo npm install -g npm@latest
-            rm -rf node_modules
             npm install
             npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-env
       - revert-migrations
