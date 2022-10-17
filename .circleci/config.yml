@@ -317,9 +317,10 @@ jobs:
           name: backend URL
           command: | 
             cd frontend
+            sudo npm install -g npm@latest
+            rm -rf node_modules
             npm install
             npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-env
       - revert-migrations
@@ -339,6 +340,7 @@ jobs:
       - awscli-install
       - ansible-install
       - run:
+          name: Backend Deploy
           command: |
             cd backend
             npm i
