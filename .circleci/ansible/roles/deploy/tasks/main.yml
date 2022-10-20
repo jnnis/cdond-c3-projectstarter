@@ -1,13 +1,11 @@
-shell: |
-  cd ~/backend-app/dist
-  cd ../
-  npm install
-  npm run build
-  sudo npm install forever -g
-  sudo npm install ts-node -g
-  forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
+  shell: |
+    cd ~/backend-app/dist
+    cd ../
+    npm install
+    npm run build
+    sudo npm install forever -g
+    sudo npm install ts-node -g
+    forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
+    env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu
 
 register: execute_node
-
-shell: |
-  env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu
