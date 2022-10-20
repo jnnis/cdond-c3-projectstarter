@@ -22,4 +22,4 @@
   become: true
   copy:
     src: myenv.sh
-    dst: /etc/profile.d/
+    dest: /etc/profile.d/
