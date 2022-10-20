@@ -8,4 +8,4 @@
     forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
     env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu
 
-  register: execute_node
+  # register: execute_node
