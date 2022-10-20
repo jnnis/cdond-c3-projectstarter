@@ -368,10 +368,12 @@ jobs:
   smoke-test:
     docker:
       - image: cimg/base:stable 
+      - attach_workspace:
+          at: ~/
     steps:
       - checkout
       - nodejs-install
-      - awscli-install
+      - awscli-install  
       - run:
           name: Backend smoke test
           command: |
@@ -382,9 +384,9 @@ jobs:
               echo "${API_URL}"
               if curl "${API_URL}/api/status" | grep "ok"
               then
-                return 0
+                  return 0
               else
-                return 1
+                  return 1
               fi
       - run:
           name: Frontend smoke test.
@@ -393,13 +395,13 @@ jobs:
               echo ${FE_URL} 
               if curl -s ${FE_URL} | grep "Welcome"
               then
-                return 1
+                return 0
               else
                 return 1
               fi
 
-      - destroy-env
-      - revert-migrations
+      # - destroy-env
+      # - revert-migrations
 
   # cloudfront-update:
   #   docker:

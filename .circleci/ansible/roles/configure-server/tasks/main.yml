@@ -18,8 +18,8 @@
     state: latest
     production: yes
 
-# - name: "Move ENV Files"
-#   become: true
-#   copy:
-#     src: myenv.sh
-#     dst: /etc/profile.d/
+- name: "Move ENV Files"
+  become: true
+  copy:
+    src: myenv.sh
+    dst: /etc/profile.d/
