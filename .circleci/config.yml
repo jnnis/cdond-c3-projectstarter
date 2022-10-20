@@ -368,10 +368,10 @@ jobs:
   smoke-test:
     docker:
       - image: cimg/base:stable 
-      - attach_workspace:
-          at: ~/
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
       - nodejs-install
       - awscli-install  
       - run:
