@@ -1,14 +1,16 @@
-# - name: "install nodejs source shell"
-#   become: true
-#   shell: |
-#     curl -fsSL "https://deb.nodesource.com/setup_13.x" | sudo -E bash -
+- name: "install nodejs source shell"
+  become: true
+  shell: curl -fsSL "https://deb.nodesource.com/setup_13.x" | sudo -E bash -
 
 - name: "install node.js"
   become: true
   apt:
-    name: ['nodejs', 'npm']
+    name: nodejs
     state: latest
     update_cache: yes
+
+- name: "install npm"
+  shell: apt npm install
 
 - name: "install pm2"
   become: true
@@ -17,6 +19,9 @@
     global: yes
     state: latest
     production: yes
+  shell: |
+    pm2 stop default
+    pm2 start npm -- start
 
 - name: "Move ENV Files"
   become: true
