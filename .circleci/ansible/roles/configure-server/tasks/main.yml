@@ -10,7 +10,7 @@
     update_cache: yes
 
 - name: "install npm"
-  shell: apt npm install
+  command: apt npm install
 
 - name: "install pm2"
   become: true
