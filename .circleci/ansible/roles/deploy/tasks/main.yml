@@ -1,4 +1,5 @@
-   command: |
+   
+   shell: |
       cd ~/backend-app/dist
       cd ../
       npm install
