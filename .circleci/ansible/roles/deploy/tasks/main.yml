@@ -1,12 +1,24 @@
-   
-   shell: |
-      cd ~/backend-app/dist
-      cd ../
-      npm install
-      npm run build
-      sudo npm install forever -g
-      sudo npm install ts-node -g
-      forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
+- name: "backend app dir in EC2"
+  file:
+    path: ~/backend-app
+    state: directory
+
+- name: "extract bk-end files"
+  unarchive:
+    src: artifact.tar.gz
+    dest: ~/backend-app
+
+- name: "install dependencies"
+  shell: |
+    cd ~/backend-app
+    npm i   
+    cd ~/backend-app/dist
+    cd ../
+    npm install
+    npm run build
+    sudo npm install forever -g
+    sudo npm install ts-node -g
+    forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
   
   # register: execute_node   
   # shell: env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu
