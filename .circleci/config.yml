@@ -412,10 +412,8 @@ jobs:
       - run:
           name: Install dep
           command: |
-            yum install -y npm nodejs
             export OLD_WFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo "Old Work-Flow ID: "${OLD_WFLOW_ID}"
-            curl https://kvdb.io/LPamLViNgAUtDLm15KvrSM/old_id -d "${OLD_WFLOW_ID}" 
+            echo "Old Work-Flow ID: "${OLD_WFLOW_ID}" 
       - run:
           name: Update cloudfront distribution
           command: |
@@ -429,7 +427,7 @@ jobs:
       - destroy-env
       - revert-migrations      
 
-cleanup:
+  cleanup:
     docker:
       - image: amazon/aws-cli
     steps:
