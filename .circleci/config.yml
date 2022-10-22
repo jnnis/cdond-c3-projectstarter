@@ -429,7 +429,7 @@ jobs:
 
   cleanup:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/base:stable 
     steps:
       - checkout
       - run:
@@ -443,8 +443,7 @@ jobs:
           command: |
             if [[ "${STACKS[@]}" =~ "${OLD_WFLOW_ID}" ]]
             then
-              aws s3 rm "s3://udapeople-${OLD_WFLOW_ID} --recursive"
-              s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+              aws s3 rm "s3://udapeople-${OLD_WFLOW_ID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WFLOW_ID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WFLOW_ID}"
             fi
