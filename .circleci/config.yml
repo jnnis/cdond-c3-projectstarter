@@ -423,6 +423,8 @@ jobs:
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --stack-name InitialStack \
             --tags project=udapeople
+            echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
+            echo "Current Work-Flow ID": "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - destroy-env
       - revert-migrations      
@@ -432,6 +434,7 @@ jobs:
       - image: cimg/base:stable 
     steps:
       - checkout
+      - awscli-install 
       - run:
           name: Get old stack workflow id
           command: |
