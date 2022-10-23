@@ -421,10 +421,10 @@ jobs:
           command: |
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
-            --template-file .circleci/files/cloudfront.yml \
-            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-            --stack-name InitialStack \
-            --tags project=udapeople
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name "InitialStack-${OLD_WFLOW_ID}" \
+              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
             echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
             echo "Current Work-Flow ID": "${CIRCLE_WORKFLOW_ID:0:7}"
 
@@ -441,20 +441,18 @@ jobs:
           name: Get old stack workflow id
           command: |
             export STACKS=$(aws cloudformation list-stacks \
-            --query "StackSummaries[*].StackName" \
-            --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+              --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
             echo "stacks name": "${STACKS[@]}"
-            echo Old Work-Flow ID: $OLD_WFLOW_ID
-
-      - run:
-          name: Remove old stacks and files
-          command: |
-            echo Old Work-Flow ID: $OLD_WFLOW_ID 
+            echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
             if [[ "${STACKS[@]}" =~ "${OLD_WFLOW_ID}" ]]
             then
+              echo '---delete confirmed---'
               aws s3 rm "s3://udapeople-${OLD_WFLOW_ID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WFLOW_ID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WFLOW_ID}"
+            else
+              echo '---cannot cleanup---'
             fi
             
 workflows:
