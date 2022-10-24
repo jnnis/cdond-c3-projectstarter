@@ -404,54 +404,54 @@ jobs:
       - destroy-env
       - revert-migrations
 
-  cloudfront-update:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Install deps., Update cloudfront distribution
-          command: |
-            export OLD_WFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
-            # echo ${OLD_WFLOW_ID} >> ~/OLD_WFLOW_ID.txt
-            # cat ~/OLD_WFLOW_ID.txt
-            # Change the initial stack name, as applicable to you
-            aws cloudformation deploy \
-            --template-file .circleci/files/cloudfront.yml \
-            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-            --stack-name "InitialStack" \
-            --tags project=udapeople
-            # echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
-            echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
-            echo CurrentWorkFlowID: "${CIRCLE_WORKFLOW_ID:0:7}"
+  # cloudfront-update:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install deps., Update cloudfront distribution
+  #         command: |
+  #           export OLD_WFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
+  #           echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
+  #           # echo ${OLD_WFLOW_ID} >> ~/OLD_WFLOW_ID.txt
+  #           # cat ~/OLD_WFLOW_ID.txt
+  #           # Change the initial stack name, as applicable to you
+  #           aws cloudformation deploy \
+  #           --template-file .circleci/files/cloudfront.yml \
+  #           --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+  #           --stack-name "InitialStack-udapeople" \
+  #           --tags project=udapeople
+  #           # echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
+  #           echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
+  #           echo CurrentWorkFlowID: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-      # - destroy-env
-      # - revert-migrations      
+  #     - destroy-env
+  #     - revert-migrations      
 
-  cleanup:
-    docker:
-      - image: cimg/base:stable 
-    steps:
-      - checkout
-      - awscli-install 
-      - run:
-          name: Get old stack workflow id
-          command: |
-            export STACKS=$(aws cloudformation list-stacks \
-              --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            echo "stacks name": "${STACKS[@]}"
-            echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
-            if [[ "${STACKS[@]}" =~ "${OLD_WFLOW_ID}" ]]
-            then
-              echo '---delete confirmed---'
-              aws s3 rm s3://udapeople-${OLD_WFLOW_ID} --recursive
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WFLOW_ID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WFLOW_ID}"
-            else
-              echo '---cannot cleanup---'
-            fi
+  # cleanup:
+  #   docker:
+  #     - image: cimg/base:stable 
+  #   steps:
+  #     - checkout
+  #     - awscli-install 
+  #     - run:
+  #         name: Get old stack workflow id
+  #         command: |
+  #           export STACKS=$(aws cloudformation list-stacks \
+  #             --query "StackSummaries[*].StackName" \
+  #             --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+  #           echo "stacks name": "${STACKS[@]}"
+  #           # echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
+  #           if [[ "${STACKS[@]}" =~ "${OLD_WFLOW_ID}" ]]
+  #           then
+  #             echo '---delete confirmed---'
+  #             aws s3 rm s3://udapeople-${OLD_WFLOW_ID} --recursive
+  #             aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WFLOW_ID}"
+  #             aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WFLOW_ID}"
+  #           else
+  #             echo '---cannot cleanup---'
+  #           fi
             
 workflows:
   default:
@@ -481,7 +481,7 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
