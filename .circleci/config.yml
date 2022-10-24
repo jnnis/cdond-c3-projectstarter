@@ -413,7 +413,7 @@ jobs:
           name: Install dep
           command: |
             export OLD_WFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo "Old Work-Flow ID": "${OLD_WFLOW_ID}" 
+            echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
             # echo ${OLD_WFLOW_ID} >> ~/OLD_WFLOW_ID.txt
             # cat ~/OLD_WFLOW_ID.txt
       - run:
@@ -423,10 +423,11 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --stack-name "InitialStack" \
+              --stack-name "InitialStack-${OLD_WFLOW_ID}" \
               --tags project=udapeople
-            echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
-            echo "Current Work-Flow ID": "${CIRCLE_WORKFLOW_ID:0:7}"
+            # echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
+            echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
+            echo CurrentWorkFlowID: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - destroy-env
       - revert-migrations      
