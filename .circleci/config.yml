@@ -410,7 +410,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dep, Update cloudfront distribution
+          name: Install deps., Update cloudfront distribution
           command: |
             export OLD_WFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
             echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
