@@ -413,14 +413,17 @@ jobs:
           command: |
             export OLD_WFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
             echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
+            curl https://kvdb.io/LPamLViNgAUtDLm15KvrSM/old_workflow_id -d "${OLD_WFLOW_ID}"
             # echo ${OLD_WFLOW_ID} >> ~/OLD_WFLOW_ID.txt
             # cat ~/OLD_WFLOW_ID.txt
+      - run:
+          name: Update cloudfront distribution
+          command: |
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --stack-name "InitialStack-udapeople" \
-            --tags project=udapeople
             # echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
             echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
             echo CurrentWorkFlowID: "${CIRCLE_WORKFLOW_ID:0:7}"
@@ -440,12 +443,18 @@ jobs:
             export STACKS=$(aws cloudformation list-stacks \
               --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            echo "stacks name": "${STACKS[@]}"
-            # echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
+            echo stack name: "${STACKS[@]}"
+            export OLD_WFLOW_ID=$(curl --insecure https://kvdb.io/LPamLViNgAUtDLm15KvrSM/old_workflow_id)
+            echo OldWorkFlowID: "${OLD_WFLOW_ID}"
+      - run:
+          name: Remove Old Stacks
+          command: |
+            export OLD_WFLOW_ID=$(curl --insecure https://kvdb.io/LPamLViNgAUtDLm15KvrSM/old_workflow_id)
+            echo OldWorkFlowID: "${OLD_WFLOW_ID}"
             if [[ "${STACKS[@]}" =~ "${OLD_WFLOW_ID}" ]]
             then
               echo '---delete confirmed---'
-              aws s3 rm s3://udapeople-${OLD_WFLOW_ID} --recursive
+              aws s3 rm "s3://udapeople-${OLD_WFLOW_ID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WFLOW_ID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WFLOW_ID}"
             else
