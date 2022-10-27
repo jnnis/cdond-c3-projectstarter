@@ -408,24 +408,26 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
       - run:
-          name: Install deps., Update cloudfront distribution
+          name: export old workflow ID
           command: |
             export OLD_WFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
             echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
-            curl https://kvdb.io/LPamLViNgAUtDLm15KvrSM/old_workflow_id -d "${OLD_WFLOW_ID}"
-            # echo ${OLD_WFLOW_ID} >> ~/OLD_WFLOW_ID.txt
-            # cat ~/OLD_WFLOW_ID.txt
+            echo ${OLD_WFLOW_ID} >> ~/OLD_WFLOW_ID.txt
+            cat ~/OLD_WFLOW_ID.txt
       - run:
           name: Update cloudfront distribution
           command: |
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
-            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-            --stack-name "InitialStack-" \
+            --stack-name "InitialStack-${OLD_WFLOW_ID}" \
+            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
             # echo "Old Work-Flow ID": "${OLD_WFLOW_ID}"
-            echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
+            # echo OldWorkFlowID: "${OLD_WFLOW_ID}" 
             echo CurrentWorkFlowID: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - destroy-env
@@ -436,30 +438,44 @@ jobs:
       - image: cimg/base:stable 
     steps:
       - checkout
-      - awscli-install 
+      - attach_workspace:
+          at: ~/
+      - awscli-install
       - run:
           name: Get old stack workflow id
           command: |
-            export STACKS=$(aws cloudformation list-stacks \
-              --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            echo stack name: "${STACKS[@]}"
-            export OLD_WFLOW_ID=$(curl --insecure https://kvdb.io/LPamLViNgAUtDLm15KvrSM/old_workflow_id)
+            # export STACKS=$(aws cloudformation list-stacks \
+            #   --query "StackSummaries[*].StackName" \
+            #   --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            # echo stack name: "${STACKS[@]}"
+            # echo OldWorkFlowID: "${OLD_WFLOW_ID}"
+            cat ~/OLD_WFLOW_ID.txt
+            OldWorkFlowID:$(cat ~/OLD_WFLOW_ID.txt)
             echo OldWorkFlowID: "${OLD_WFLOW_ID}"
-      - run:
-          name: Remove Old Stacks
-          command: |
-            export OLD_WFLOW_ID=$(curl --insecure https://kvdb.io/LPamLViNgAUtDLm15KvrSM/old_workflow_id)
-            echo OldWorkFlowID: "${OLD_WFLOW_ID}"
-            if [[ "${STACKS[@]}" =~ "${OLD_WFLOW_ID}" ]]
+            echo $OLD_WFLOW_ID
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo '---delete confirmed---'
-              aws s3 rm "s3://udapeople-${OLD_WFLOW_ID}" --recursive
+              aws s3 rm "s3://${OLD_WFLOW_ID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WFLOW_ID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WFLOW_ID}"
             else
               echo '---cannot cleanup---'
             fi
+      # - run:
+      #     name: Remove Old Stacks
+      #     command: |
+            
+      #       echo OldWorkFlowID: "${OLD_WFLOW_ID}"
+      #       if [[ "${STACKS[@]}" =~ "${OLD_WFLOW_ID}" ]]
+      #       then
+      #         echo '---delete confirmed---'
+      #         aws s3 rm "s3://udapeople-${OLD_WFLOW_ID}" --recursive
+      #         aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WFLOW_ID}"
+      #         aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WFLOW_ID}"
+      #       else
+      #         echo '---cannot cleanup---'
+      #       fi
             
 workflows:
   default:
