@@ -1,0 +1,7 @@
+URL01: https://github.com/jnnis/cdond-c3-projectstarter
+
+URL02: S3 Bucket public link:
+http://udapeople-3d188a7.s3-website-us-east-1.amazonaws.com/#/employees
+
+Clountfront link:
+http://d285ywvg5i2clb.cloudfront.net/#/employees
